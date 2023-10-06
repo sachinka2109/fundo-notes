@@ -8,7 +8,7 @@ import TakeNoteThreeList from '../TakeNoteThree/TakeNoteThreeList'
 import {useState} from 'react';
 import { useEffect } from 'react'
 import {getNotes} from '../../services/dataService'
-import { updateArchive } from '../../services/dataService'
+import { updateArchive,deleteForever,deleteItem } from '../../services/dataService'
 import { useLocation } from 'react-router'
 
 function Home() {
@@ -52,6 +52,20 @@ function Home() {
     }
   }
 
+  const restoreItem = async(id) => {
+    let data = {noteIdList:[id],isDeleted:false}
+    await deleteItem(data);
+    getData();
+  }
+
+  const deleteForeverItem = async(id) => {
+    let data = {noteIdList:[id]}
+    await deleteForever(data);
+    getData();
+  }
+
+
+
   useEffect(()=> {
     if(searchText !== '') {
       const searchResult = data.filter(data => data.title.toLowerCase().includes(searchText.toLowerCase()) || data.description.toLowerCase().includes(searchText.toLowerCase()));
@@ -91,8 +105,8 @@ function Home() {
         </Box> 
         <Box sx={{display:viewList? 'flex':'block',flexWrap:'wrap',justifyContent:'center',my:'30px',rowGap:'30px'}}>
         {data.map((item) => (viewList ? 
-          (<TakeNoteThree key={item.id} data={item} onArchive={()=> onArchive(item)} onUnArchive={()=> onUnArchive(item)} getData={getData} /> ) : 
-          (<TakeNoteThreeList key={item.id} data={item} onArchive={()=> onArchive(item)} onUnArchive={()=> onUnArchive(item)} getData={getData}/> ))
+          (<TakeNoteThree key={item.id} data={item} onArchive={()=> onArchive(item)} onUnArchive={()=> onUnArchive(item)} getData={getData} restoreItem={restoreItem} deleteForeverItem={deleteForeverItem} /> ) : 
+          (<TakeNoteThreeList key={item.id} data={item} onArchive={()=> onArchive(item)} onUnArchive={()=> onUnArchive(item)} getData={getData} restoreItem={restoreItem} deleteForeverItem={deleteForeverItem}/> ))
         )}
         </Box>
       </Box>
